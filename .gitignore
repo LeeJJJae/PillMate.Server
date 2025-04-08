@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+launchSettings.json
+appsettings.*.json
+appsettings.Development.json
+*.db
+*.DS_Store

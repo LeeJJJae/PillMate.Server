@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PillMate.Server", "PillMate.Server.csproj", "{D62750E6-6ACB-468C-113A-B9EB1E8637CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D62750E6-6ACB-468C-113A-B9EB1E8637CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D62750E6-6ACB-468C-113A-B9EB1E8637CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D62750E6-6ACB-468C-113A-B9EB1E8637CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D62750E6-6ACB-468C-113A-B9EB1E8637CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C8588C00-D127-4A41-8C8D-FC735E3B40F3}
+	EndGlobalSection
+EndGlobal

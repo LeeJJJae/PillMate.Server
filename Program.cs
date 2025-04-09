@@ -3,36 +3,35 @@ using PillMate.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ AppDbContext 존재 확인 로그 (선택)
-Console.WriteLine($"✔ AppDbContext 존재 확인: {typeof(AppDbContext).FullName}");
-
-// 컨트롤러 서비스 등록
+// 서비스 등록
 builder.Services.AddControllers();
-
-// DbContext 등록
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 0, 29))
     ));
 
-// Swagger(OpenAPI) 설정
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Swagger UI 사용
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// 정적 파일 (선택사항, 없으면 생략 가능)
+// app.UseStaticFiles(); <-- Swagger UI 자체는 이거 없이도 잘 뜸
 
+// HTTPS 강제 리디렉션 제거 (CLI 실행 시 필요 없음)
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
 
-// ✅ 컨트롤러 매핑 필수
 app.MapControllers();
+
+// ✅ Swagger UI 반드시 여기서 등록해야 Swagger 페이지 열림
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PillMate.Server v1");
+    c.RoutePrefix = "swagger"; // http://localhost:5000/swagger
+});
 
 app.Run();

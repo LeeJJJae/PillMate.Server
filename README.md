@@ -80,3 +80,13 @@
 | 복약기록 수정     | PUT    | /api/bukyoungstatuses/{id}  | 복약 여부 상태 수정                |
 | 복약기록 삭제     | DELETE | /api/bukyoungstatuses/{id}  | 복약 기록 삭제                    |
 
+## ✅ 사전 준비
+1. .NET SDK 8.0 설치
+2. VS (ASP.NET및 웹 개발 + .NET 데스크톱 개발)
+3. Mysql workbench에서 CREATE DATABASE pillmate CHARACTER SET utf8mb4;
+4. 터미널에서 dotnet tool install --global dotnet-ef
+5. cd PillMate.Server
+6. dotnet restore
+7. dotnet build
+8. dotnet ef database update
+9. dotnet run

@@ -1,10 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using PillMate.Server.Data;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 서비스 등록
-builder.Services.AddControllers();
+// ✅ 순환 참조 방지 설정 추가
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -17,16 +23,14 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // 정적 파일 (선택사항, 없으면 생략 가능)
-// app.UseStaticFiles(); <-- Swagger UI 자체는 이거 없이도 잘 뜸
+// app.UseStaticFiles();
 
-// HTTPS 강제 리디렉션 제거 (CLI 실행 시 필요 없음)
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-// ✅ Swagger UI 반드시 여기서 등록해야 Swagger 페이지 열림
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {

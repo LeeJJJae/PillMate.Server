@@ -8,12 +8,11 @@ namespace PillMate.Server.Models
         [Key]
         public int Id { get; set; }
 
-        public string Hwanja_No { get; set; }
-        public string Hwanja_Name { get; set; }
+        public string? Hwanja_No { get; set; }
+        public string? Hwanja_Name { get; set; }
 
         public bool Bukyoung_Chk { get; set; }
 
-        // Optional: 관계 설정
         public int? PatientId { get; set; }
 
         [ForeignKey("PatientId")]

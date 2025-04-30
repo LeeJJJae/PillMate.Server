@@ -10,6 +10,7 @@ namespace PillMate.Server.Models
 
     public string? Hwanja_Name { get; set; }
     public string? Hwanja_Gender { get; set; }
+    public int? Hwanja_Age { get; set; }
     public string? Hwanja_No { get; set; }
     public string? Hwanja_Room { get; set; }
     public string? Hwanja_PhoneNumber { get; set; }
@@ -18,6 +19,8 @@ namespace PillMate.Server.Models
     public string? Bohoja_PhoneNumber { get; set; }
 
     public List<BukyoungStatus> BukyoungStatuses { get; set; } = new();
+    public List<TakenMedicine> TakenMedicines { get; set; } = new();
+
 }
 
 }

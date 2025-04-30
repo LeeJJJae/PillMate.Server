@@ -10,6 +10,7 @@ namespace PillMate.Server.Models
     public string? Yank_Name { get; set; }
     public int Yank_Cnt { get; set; }
     public string? Yank_Num { get; set; }
+    public List<TakenMedicine> TakenMedicines { get; set; } = new();
 }
 
 }

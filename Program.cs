@@ -35,7 +35,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "PillMate.Server v1");
-    c.RoutePrefix = "swagger"; // http://localhost:5000/swagger
+    c.RoutePrefix = "swagger"; // https://localhost:14188/swagger
 });
 
 app.Run();

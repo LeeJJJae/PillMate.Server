@@ -34,12 +34,24 @@ namespace PillMate.Server.Controllers
                 .Select(b => b.Hwanja_Name) // 실제 약 이름으로 수정 가능
                 .ToListAsync();
 
+            // 💊 TakenMedicine + Pill 정보 조회
+            var takenMedicines = await _context.TakenMedicines
+                .Include(t => t.Pill)
+                .Where(t => t.PatientId == patientId)
+                .Select(t => new
+                {
+                    PillName = t.Pill.Yank_Name,
+                    Dosage = t.Dosage
+                })
+                .ToListAsync();
+
             // 3. QR에 담을 데이터 구성
             var qrData = new
             {
                 patient.Hwanja_No,
                 patient.Hwanja_Name,
-                Pills = pillNames
+                Pills = pillNames,
+                TakenMedicines = takenMedicines // 🟡 추가된 부분
             };
 
             // 4. JSON 직렬화 (한글 깨짐 방지)

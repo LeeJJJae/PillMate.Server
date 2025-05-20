@@ -10,7 +10,8 @@ namespace PillMate.Server.Data
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Pill> Pills { get; set; }
         public DbSet<BukyoungStatus> BukyoungStatuses { get; set; }
-        public DbSet<TakenMedicine> TakenMedicines { get; set; } // ✅ 추가
+        public DbSet<TakenMedicine> TakenMedicines { get; set; } 
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

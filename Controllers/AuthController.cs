@@ -30,18 +30,34 @@ namespace PillMate.Server.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            //Console.WriteLine($"[회원가입] 저장된 해시: {user.PasswordHash}");
+
             return Ok("회원가입 성공");
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] User loginUser)
         {
-            var hashedPassword = ComputeHash(loginUser.PasswordHash);
-            var user = _context.Users.SingleOrDefault(u => u.Username == loginUser.Username && u.PasswordHash == hashedPassword);
-            if (user == null)
-                return Unauthorized("사용자 이름 또는 비밀번호가 틀렸습니다.");
+            var inputHashed = ComputeHash(loginUser.PasswordHash);
 
-            // JWT 토큰 발급 코드 등 추가 가능 (현재는 단순 사용자 정보 반환)
+            //Console.WriteLine($"[로그인 요청] 사용자명: {loginUser.Username}");
+            //Console.WriteLine($"[로그인 요청] 이메일: {loginUser.Email}");
+            //Console.WriteLine($"[로그인 요청] 입력된 평문 비밀번호: {loginUser.PasswordHash}");
+            //Console.WriteLine($"[로그인 요청] 해시된 입력: {inputHashed}");
+
+            var user = _context.Users
+                .SingleOrDefault(u =>
+                    u.Username == loginUser.Username &&
+                    u.Email == loginUser.Email &&
+                    u.PasswordHash == inputHashed);
+
+            if (user == null)
+            {
+                Console.WriteLine("[로그인 실패] 사용자 없음 또는 정보 불일치");
+                return Unauthorized("아이디, 이메일, 비밀번호를 확인해주세요.");
+            }
+
+            Console.WriteLine("[로그인 성공]");
             return Ok(new { user.Id, user.Username, user.Email });
         }
 

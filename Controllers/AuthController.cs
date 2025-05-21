@@ -10,11 +10,11 @@ namespace PillMate.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class conn_raspberry : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public AuthController(AppDbContext context)
+        public conn_raspberry(AppDbContext context)
         {
             _context = context;
         }

@@ -20,6 +20,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Raspberry Pi와의 연결을 위한 서비스 등록
+builder.Services.AddHostedService<Conn_Raspberry>();
+
 var app = builder.Build();
 
 // 정적 파일 (선택사항, 없으면 생략 가능)

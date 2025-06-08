@@ -40,7 +40,7 @@ namespace PillMate.Server.Controllers
                 .Where(t => t.PatientId == patientId)
                 .Select(t => new
                 {
-                    PillName = t.Pill.Yank_Name,
+                    PId = t.PillId, // ✅ 여기에 추가
                     Dosage = t.Dosage
                 })
                 .ToListAsync();

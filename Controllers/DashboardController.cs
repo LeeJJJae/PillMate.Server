@@ -44,11 +44,11 @@ namespace PillMate.Server.Controllers
                 .Select(bs => new
                 {
                     PatientName = bs.Hwanja_Name ?? bs.Patient.Hwanja_Name,
-                    PillName = _context.TakenMedicines
-                        .Include(tm => tm.Pill)  
+                    PillName = string.Join(" | ", _context.TakenMedicines
+                        .Include(tm => tm.Pill)
                         .Where(tm => tm.PatientId == bs.PatientId)
                         .Select(tm => tm.Pill.Yank_Name)
-                        .FirstOrDefault(), // 하나만
+                        .Distinct()),
                     IsTaken = bs.Bukyoung_Chk
                 })
                 .ToListAsync();

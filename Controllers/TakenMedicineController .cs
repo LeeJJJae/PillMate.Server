@@ -21,6 +21,7 @@ namespace PillMate.Server.Controllers
         public async Task<ActionResult<IEnumerable<TakenMedicine>>> GetByPatient(int patientId)
         {
             return await _context.TakenMedicines
+                .AsNoTracking() // ✅ 중복 추적 방지
                 .Include(tm => tm.Pill)
                 .Where(tm => tm.PatientId == patientId)
                 .ToListAsync();

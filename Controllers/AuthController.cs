@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using PillMate.Server.DTO;
 
 namespace PillMate.Server.Controllers
 {
@@ -68,5 +70,51 @@ namespace PillMate.Server.Controllers
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
+        [HttpPut("update")]
+        public async Task<IActionResult> Update([FromBody] User updatedUser)
+        {
+            var user = _context.Users.SingleOrDefault(u => u.Email == updatedUser.Email);
+            if (user == null) return NotFound("사용자 없음");
+
+            user.Username = updatedUser.Username;
+            user.PasswordHash = ComputeHash(updatedUser.PasswordHash);
+            await _context.SaveChangesAsync();
+
+            return Ok("업데이트 성공");
+        }
+
+        [HttpPut("password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null)
+                return NotFound("사용자를 찾을 수 없습니다.");
+
+            var currentHash = ComputeHash(dto.CurrentPassword);
+            if (user.PasswordHash != currentHash)
+                return BadRequest("기존 비밀번호가 일치하지 않습니다.");
+
+            user.PasswordHash = ComputeHash(dto.NewPassword);
+            await _context.SaveChangesAsync();
+
+            return Ok("비밀번호 변경 완료");
+        }
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteAccount([FromBody] UserDto dto)
+        {
+            var hashed = ComputeHash(dto.PasswordHash);
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == dto.Email && u.PasswordHash == hashed);
+
+            if (user == null)
+                return Unauthorized("비밀번호가 틀렸습니다.");
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("탈퇴 완료");
+        }
+
     }
 }

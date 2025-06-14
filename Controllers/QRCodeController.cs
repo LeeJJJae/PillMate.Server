@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PillMate.Server.Data;
 using QRCoder;
-using Newtonsoft.Json;
-using System.Drawing; // Bitmap 필요
-using System.IO;       // File IO
+using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace PillMate.Server.Controllers
@@ -23,54 +23,50 @@ namespace PillMate.Server.Controllers
         [HttpGet("{patientId}")]
         public async Task<IActionResult> GenerateQRCode(int patientId)
         {
-            // 1. 환자 조회
-            var patient = await _context.Patients.FindAsync(patientId);
-            if (patient == null)
-                return NotFound("해당 환자를 찾을 수 없습니다.");
-
-            // 2. 복약 상태에 연결된 약 이름 리스트 수집 (예: 복용 체크된 약)
-            var pillNames = await _context.BukyoungStatuses
-                .Where(b => b.PatientId == patientId && b.Bukyoung_Chk)
-                .Select(b => b.Hwanja_Name) // 실제 약 이름으로 수정 가능
-                .ToListAsync();
-
-            // 💊 TakenMedicine + Pill 정보 조회
-            var takenMedicines = await _context.TakenMedicines
-                .Include(t => t.Pill)
-                .Where(t => t.PatientId == patientId)
-                .Select(t => new
-                {
-                    PId = t.PillId, // ✅ 여기에 추가
-                    Dosage = t.Dosage
-                })
-                .ToListAsync();
-
-            // 3. QR에 담을 데이터 구성
-            var qrData = new
+            try
             {
-                patient.Hwanja_No,
-                patient.Hwanja_Name,
-                Pills = pillNames,
-                TakenMedicines = takenMedicines // 🟡 추가된 부분
-            };
+                var patient = await _context.Patients.FindAsync(patientId);
+                if (patient == null)
+                    return NotFound("해당 환자를 찾을 수 없습니다.");
 
-            // 4. JSON 직렬화 (한글 깨짐 방지)
-            string qrText = JsonConvert.SerializeObject(qrData, Formatting.None);
+                var takenMedicines = await _context.TakenMedicines
+                    .Include(t => t.Pill)
+                    .Where(t => t.PatientId == patientId)
+                    .Select(t => new
+                    {
+                        PId = t.PillId,
+                        Dosage = t.Dosage
+                    })
+                    .ToListAsync();
 
-            // 5. QR 생성
-            using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new BitmapByteQRCode(qrCodeData);
-            byte[] qrCodeImage = qrCode.GetGraphic(20);
+                var qrData = new
+                {
+                    patient.Hwanja_No,
+                    patient.Hwanja_Name,
+                    TakenMedicines = takenMedicines
+                };
 
-            // 6. 서버에 QR 이미지 저장
-            string folderPath = @"C:\PillMate.Server\qrimage";
-            Directory.CreateDirectory(folderPath); // 폴더 없으면 생성
-            string savePath = Path.Combine(folderPath, $"qrcode_{patient.Hwanja_No}.png");
-            System.IO.File.WriteAllBytes(savePath, qrCodeImage);
+                string qrText = JsonConvert.SerializeObject(qrData, Formatting.None);
 
-            // 7. 클라이언트로 이미지 반환
-            return File(qrCodeImage, "image/png");
+                using var qrGenerator = new QRCodeGenerator();
+                using var qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new BitmapByteQRCode(qrCodeData);
+                byte[] qrImage = qrCode.GetGraphic(20);
+
+                // 이미지 파일 저장 없이 직접 반환
+                return File(qrImage, "image/png");
+            }
+            catch (Exception ex)
+            {
+                // 로깅
+                /* string logPath = @"C:\PillMate.Server\logs";
+                Directory.CreateDirectory(logPath);
+                string logFile = Path.Combine(logPath, "qr_errors.log");
+                string logMessage = $"[{DateTime.Now}] QR 생성 실패 (환자 ID: {patientId})\n{ex}\n\n";
+                await System.IO.File.AppendAllTextAsync(logFile, logMessage); */
+
+                return StatusCode(500, $"QR 코드 생성 실패: {ex.Message}");
+            }
         }
     }
 }

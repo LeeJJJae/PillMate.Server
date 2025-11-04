@@ -10,8 +10,11 @@ namespace PillMate.Server.Data
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Pill> Pills { get; set; }
         public DbSet<BukyoungStatus> BukyoungStatuses { get; set; }
-        public DbSet<TakenMedicine> TakenMedicines { get; set; } 
+        public DbSet<TakenMedicine> TakenMedicines { get; set; }
         public DbSet<User> Users { get; set; }
+
+        // ✅ 새로 추가되는 출고 기록 테이블
+        public DbSet<StockTransaction> StockTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +33,19 @@ namespace PillMate.Server.Data
                 .WithMany(p => p.TakenMedicines)
                 .HasForeignKey(tm => tm.PatientId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // ✅ StockTransaction 관계 설정
+            modelBuilder.Entity<StockTransaction>()
+                .HasOne(s => s.Pill)
+                .WithMany()
+                .HasForeignKey(s => s.PillId)
+                .OnDelete(DeleteBehavior.Cascade);  // 약품 삭제 시 출고 기록도 삭제됨
+
+            modelBuilder.Entity<StockTransaction>()
+                .HasOne(s => s.Patient)
+                .WithMany()
+                .HasForeignKey(s => s.PatientId)
+                .OnDelete(DeleteBehavior.SetNull);  // 환자 삭제 시 출고 기록은 남기되, PatientId를 null로 변경
         }
     }
 }

@@ -97,10 +97,26 @@ namespace PillMate.Server.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Manufacturer")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StorageLocation")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Yank_Cnt")
                         .HasColumnType("int");
 
                     b.Property<string>("Yank_Name")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Yank_Num")
@@ -109,6 +125,43 @@ namespace PillMate.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Pills");
+                });
+
+            modelBuilder.Entity("PillMate.Server.Models.StockTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Note")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PharmacistName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("PillId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReleasedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PillId");
+
+                    b.ToTable("StockTransactions");
                 });
 
             modelBuilder.Entity("PillMate.Server.Models.TakenMedicine", b =>
@@ -174,6 +227,24 @@ namespace PillMate.Server.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("PillMate.Server.Models.StockTransaction", b =>
+                {
+                    b.HasOne("PillMate.Server.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("PillMate.Server.Models.Pill", "Pill")
+                        .WithMany()
+                        .HasForeignKey("PillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Pill");
+                });
+
             modelBuilder.Entity("PillMate.Server.Models.TakenMedicine", b =>
                 {
                     b.HasOne("PillMate.Server.Models.Patient", "Patient")
@@ -183,7 +254,7 @@ namespace PillMate.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("PillMate.Server.Models.Pill", "Pill")
-                        .WithMany("TakenMedicines")
+                        .WithMany()
                         .HasForeignKey("PillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -197,11 +268,6 @@ namespace PillMate.Server.Migrations
                 {
                     b.Navigation("BukyoungStatuses");
 
-                    b.Navigation("TakenMedicines");
-                });
-
-            modelBuilder.Entity("PillMate.Server.Models.Pill", b =>
-                {
                     b.Navigation("TakenMedicines");
                 });
 #pragma warning restore 612, 618

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PillMate.Server.Data;
 
@@ -11,9 +12,11 @@ using PillMate.Server.Data;
 namespace PillMate.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104094903_UpdateSchemaForPillAndStockTransaction")]
+    partial class UpdateSchemaForPillAndStockTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,61 +130,6 @@ namespace PillMate.Server.Migrations
                     b.ToTable("Pills");
                 });
 
-            modelBuilder.Entity("PillMate.Server.Models.PrescriptionItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PillId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PrescriptionRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PillId");
-
-                    b.HasIndex("PrescriptionRecordId");
-
-                    b.ToTable("PrescriptionItems");
-                });
-
-            modelBuilder.Entity("PillMate.Server.Models.PrescriptionRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PharmacistName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.ToTable("PrescriptionRecords");
-                });
-
             modelBuilder.Entity("PillMate.Server.Models.StockTransaction", b =>
                 {
                     b.Property<int>("Id")
@@ -282,36 +230,6 @@ namespace PillMate.Server.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("PillMate.Server.Models.PrescriptionItem", b =>
-                {
-                    b.HasOne("PillMate.Server.Models.Pill", "Pill")
-                        .WithMany()
-                        .HasForeignKey("PillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PillMate.Server.Models.PrescriptionRecord", "PrescriptionRecord")
-                        .WithMany("Items")
-                        .HasForeignKey("PrescriptionRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Pill");
-
-                    b.Navigation("PrescriptionRecord");
-                });
-
-            modelBuilder.Entity("PillMate.Server.Models.PrescriptionRecord", b =>
-                {
-                    b.HasOne("PillMate.Server.Models.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Patient");
-                });
-
             modelBuilder.Entity("PillMate.Server.Models.StockTransaction", b =>
                 {
                     b.HasOne("PillMate.Server.Models.Patient", "Patient")
@@ -354,11 +272,6 @@ namespace PillMate.Server.Migrations
                     b.Navigation("BukyoungStatuses");
 
                     b.Navigation("TakenMedicines");
-                });
-
-            modelBuilder.Entity("PillMate.Server.Models.PrescriptionRecord", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,6 +12,8 @@ namespace PillMate.Server.Data
         public DbSet<BukyoungStatus> BukyoungStatuses { get; set; }
         public DbSet<TakenMedicine> TakenMedicines { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<PrescriptionRecord> PrescriptionRecords { get; set; }
+        public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
 
         // ✅ 새로 추가되는 출고 기록 테이블
         public DbSet<StockTransaction> StockTransactions { get; set; }
@@ -46,6 +48,12 @@ namespace PillMate.Server.Data
                 .WithMany()
                 .HasForeignKey(s => s.PatientId)
                 .OnDelete(DeleteBehavior.SetNull);  // 환자 삭제 시 출고 기록은 남기되, PatientId를 null로 변경
+
+            modelBuilder.Entity<PrescriptionItem>()
+                    .HasOne(pi => pi.PrescriptionRecord)
+                    .WithMany(r => r.Items)
+                    .HasForeignKey(pi => pi.PrescriptionRecordId)
+                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -19,5 +19,6 @@ namespace PillMate.Server.DTO
         public int Quantity { get; set; }       // 출고 수량
         public string PharmacistName { get; set; } // 담당 약사 이름
         public string? Note { get; set; }       // 비고 (선택)
+        public int? PatientId { get; set; }
     }
 }

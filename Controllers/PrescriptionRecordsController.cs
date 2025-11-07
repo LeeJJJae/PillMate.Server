@@ -35,6 +35,7 @@ namespace PillMate.Server.Controllers
                 r.Note,
                 Items = r.Items.Select(i => new
                 {
+                    i.PillId,
                     i.Pill.Yank_Name,
                     i.Quantity
                 })
